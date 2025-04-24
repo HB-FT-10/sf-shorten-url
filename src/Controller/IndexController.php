@@ -9,6 +9,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 final class IndexController extends AbstractController
 {
@@ -32,7 +33,13 @@ final class IndexController extends AbstractController
             $em->persist($shortenUrl);
             $em->flush();
 
-            $this->addFlash('success', 'Votre lien a été créé : ' . $shortenUrl->getCode());
+            $redirectUrl = $this->generateUrl(
+                'app_redirect',
+                ['code' => $shortenUrl->getCode()],
+                UrlGeneratorInterface::ABSOLUTE_URL
+            );
+
+            $this->addFlash('success', 'Votre lien a été créé : ' . $redirectUrl);
         }
 
         return $this->render('index/index.html.twig', [
